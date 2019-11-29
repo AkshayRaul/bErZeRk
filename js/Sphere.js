@@ -6,6 +6,7 @@ var sphere = function(options) {
     var x = options.x;
     var y = options.y;
     var rotation = options.rotation || 0.005;
+    var sphereObject;
 
     /*
      * Creates random sized, colored sphere
@@ -32,7 +33,7 @@ var sphere = function(options) {
         sphere.position.x = x;
         sphere.position.y = y;
         sphere.radius = radius;
-
+        sphere.Object = sphere
         scene.add(sphere);
 
         return sphere;
@@ -42,8 +43,8 @@ var sphere = function(options) {
      * Returns random (x, y) position minus sphere radius
      */
     var getRandomPosition = function(radius) {
-        var x = Math.floor(Math.random() * ((SNAKE.DISPLAY_WIDTH-radius)/2)) * (Math.random() > 0.5 ? -1 : 1);
-        var y = Math.floor(Math.random() * ((SNAKE.DISPLAY_HEIGHT-radius)/2)) * (Math.random() > 0.5 ? -1 : 1);
+        var x = Math.floor(Math.random() * ((BOT.DISPLAY_WIDTH-radius)/2)) * (Math.random() > 0.5 ? -1 : 1);
+        var y = Math.floor(Math.random() * ((BOT.DISPLAY_HEIGHT-radius)/2)) * (Math.random() > 0.5 ? -1 : 1);
 
         return {x:x, y:y};
     };
@@ -65,17 +66,23 @@ var sphere = function(options) {
         sphere = createSphere();
     };
 
+    that.getSphereObject = function(){
+        return sphere;
+    }
+
     /*
      * Update
      */
     that.update = function() {
         sphere.rotation.y += rotation;
     };
-
+    that.setPosition = function(pos){  
+        sphere.position.x= pos.x;
+        sphere.position.y= pos.y;
+    }
     that.getPosition = function() { return sphere.position; }
     that.getRadius = function() { return sphere.radius; }
     that.getMesh = function() { return sphere; }
-
     var sphere = createSphere();
 
     return that;

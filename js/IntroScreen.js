@@ -6,16 +6,16 @@ var IntroScreen = Class.extend({
         this.stars = introStars({
             scene: scene,
             camera: camera,
-            stars: 40000,
+            stars: 10000,
             size:3
         });
-        this.planet = sphere({
-            scene: scene,
-            radius: 40,
-            mesh: true,
-            x: -40,
-            y: -5
-        });
+        // this.planet = sphere({
+        //     scene: scene,
+        //     radius: 100,
+        //     mesh: true,
+        //     x: -40,
+        //     y: -5
+        // });
 
         $('#intro a').click(function() {
             $('#intro').hide('slow');
@@ -25,6 +25,6 @@ var IntroScreen = Class.extend({
 
     update: function() {
         this.stars.update();
-        this.planet.update();
+        // this.planet.update();
     }
 });

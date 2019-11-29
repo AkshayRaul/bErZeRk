@@ -38,8 +38,8 @@ var startGame = function() {
                     FAR);
     camera.name = "save-me";
     // the camera starts at 0,0,0 so pull it back
-    camera.position.x = -74;
-    camera.position.y = 22;
+    camera.position.x = 0;
+    camera.position.y = -150;
     camera.position.z = CAMERA_POSITION;
     camera.lookAt(scene.position);  // Look at scene bit from side
     // Add the camera to the scene
@@ -55,18 +55,18 @@ var startGame = function() {
     var Y_MIN = 0 - (DISPLAY_HEIGHT / 2);
 
     // Global vars
-    SNAKE = {};
-    SNAKE.WIDTH = WIDTH;
-    SNAKE.HEIGHT = HEIGHT;
-    SNAKE.DISPLAY_WIDTH = DISPLAY_WIDTH;
-    SNAKE.DISPLAY_HEIGHT = DISPLAY_HEIGHT;
-    SNAKE.X_MAX = X_MAX;
-    SNAKE.X_MIN = X_MIN;
-    SNAKE.Y_MAX = Y_MAX;
-    SNAKE.Y_MIN = Y_MIN;
-    SNAKE.TILE_SIZE = 4;
-    SNAKE.CAMERA_DEBUG = true;
-    SNAKE.IMAGES = '/images/';
+    BOT = {};
+    BOT.WIDTH = WIDTH;
+    BOT.HEIGHT = HEIGHT;
+    BOT.DISPLAY_WIDTH = DISPLAY_WIDTH;
+    BOT.DISPLAY_HEIGHT = DISPLAY_HEIGHT;
+    BOT.X_MAX = X_MAX;
+    BOT.X_MIN = X_MIN;
+    BOT.Y_MAX = Y_MAX;
+    BOT.Y_MIN = Y_MIN;
+    BOT.TILE_SIZE = 4;
+    BOT.CAMERA_DEBUG = true;
+    BOT.IMAGES = '/images/';
 
     // Create point light
     var pointLight = new THREE.PointLight(0xFFFFFF);
@@ -88,39 +88,39 @@ var startGame = function() {
     light.position.set(Math.random(), Math.random(), Math.random()).normalize();
     scene.add(light);
 
-    // Draw a partial white grid
-    var gridMaterial = new THREE.LineBasicMaterial({
-        color: 0xffffff,
-        opacity: 0.2
-    });
-    // Horizontal lines
-    var x_geometry = new THREE.Geometry();
-    x_geometry.vertices.push(new THREE.Vector3(X_MIN, 0, 0));
-    x_geometry.vertices.push(new THREE.Vector3(X_MAX, 0, 0));
+    // // Draw a partial white grid
+    // var gridMaterial = new THREE.LineBasicMaterial({
+    //     color: 0xffffff,
+    //     opacity: 0.2
+    // });
+    // // Horizontal lines
+    // var x_geometry = new THREE.Geometry();
+    // x_geometry.vertices.push(new THREE.Vector3(X_MIN, 0, 0));
+    // x_geometry.vertices.push(new THREE.Vector3(X_MAX, 0, 0));
 
-    var grid = new THREE.Object3D();
-    grid.name = "save-me";
-    for (var y=2; y<Y_MAX; y=y+TILE_SIZE) {
-        var line = new THREE.Line(x_geometry, gridMaterial);
-        line.position.y = y;
-        grid.add(line);
-    }
-    // Vertical lines
-    var y_geometry = new THREE.Geometry();
-    y_geometry.vertices.push(new THREE.Vector3(0, Y_MAX, 0));
-    y_geometry.vertices.push(new THREE.Vector3(0, Y_MIN, 0));
-    for (var x=2; x<X_MAX; x=x+TILE_SIZE) {
-        var line = new THREE.Line(y_geometry, gridMaterial);
-        line.position.x = x;
-        grid.add(line);
-    }
+    // var grid = new THREE.Object3D();
+    // grid.name = "save-me";
+    // for (var y=2; y<Y_MAX; y=y+TILE_SIZE) {
+    //     var line = new THREE.Line(x_geometry, gridMaterial);
+    //     line.position.y = y;
+    //     grid.add(line);
+    // }
+    // // Vertical lines
+    // var y_geometry = new THREE.Geometry();
+    // y_geometry.vertices.push(new THREE.Vector3(0, Y_MAX, 0));
+    // y_geometry.vertices.push(new THREE.Vector3(0, Y_MIN, 0));
+    // for (var x=2; x<X_MAX; x=x+TILE_SIZE) {
+    //     var line = new THREE.Line(y_geometry, gridMaterial);
+    //     line.position.x = x;
+    //     grid.add(line);
+    // }
 
-    scene.add(grid);
+    // // scene.add(grid);
 
     $('#intro').show();
 
     // Camera movement <-------------------------------------------------------
-    if (SNAKE.CAMERA_DEBUG) {
+    if (BOT.CAMERA_DEBUG) {
         var mouseX;
         var mouseY;
         var mouseWheel = 0;
@@ -168,7 +168,7 @@ var startGame = function() {
 
         screen.update();
 
-        if (SNAKE.CAMERA_DEBUG) {
+        if (BOT.CAMERA_DEBUG) {
             if (updateCameraPosition) {
                 camera.position.x += (mouseX - camera.position.x) * 0.01;
                 camera.position.y += (- mouseY - camera.position.y) * 0.01;

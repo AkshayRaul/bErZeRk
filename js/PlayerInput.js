@@ -35,6 +35,7 @@ var playerInput = function() {
         if (keynr === KEY_DOWN) { button = that.BUTTON_DOWN; }
         if (keynr === KEY_LEFT) { button = that.BUTTON_LEFT; }
         if (keynr === KEY_RIGHT) { button = that.BUTTON_RIGHT; }
+        if (keynr === KEY_SPACE) { button = that.SPACE; }
 
         if(button != -1) {
             that.buttons[button] = pressed;

@@ -18,10 +18,10 @@ var starField = function(options) {
         geometry.vertices.push(vertex);
     }
 
-    var material = new THREE.ParticleBasicMaterial({
-        color: '0xffffff',
-        map: THREE.ImageUtils.loadTexture(
-                SNAKE.IMAGES + '/bubble.png'
+    var material = new THREE.PointsMaterial({
+        color: new THREE.Color('red'),
+        map: new THREE.TextureLoader().load(
+                BOT.IMAGES + '/bubble.png'
                 ),
         depthTest:false,
         blending: THREE.AdditiveBlending,
@@ -29,9 +29,8 @@ var starField = function(options) {
         opacity: 1,
         size:size
     });
-    material.color.setHSV(Math.random(), 1, 1);
 
-    var particles = new THREE.ParticleSystem(geometry, material);
+    var particles = new THREE.Points(geometry, material);
     particles.rotation.x = Math.random() * 15;
     particles.rotation.y = Math.random() * 15;
     particles.rotation.z = Math.random() * 15;
@@ -44,7 +43,8 @@ var starField = function(options) {
     that.update = function() {
         var time = Date.now() * 0.00001;
         particles.rotation.y = Date.now() * 0.00005;
-        material.color.setHSV(time % 1, 1, 1);
+        // material.color.set(Math.random(1), Math.random(4),Math.random());
+
     };
 
     return that;

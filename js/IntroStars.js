@@ -5,7 +5,7 @@ var introStars = function(options) {
     var that = {};
     var scene = options.scene;
     var stars = options.stars;
-    var size = options.size;
+    var size = options.size*2;
 
     // Create stars
     var geometry = new THREE.Geometry();
@@ -17,21 +17,18 @@ var introStars = function(options) {
         vertex.z = Math.random() * 1000 - 500;
         geometry.vertices.push(vertex);
     }
-
-    var material = new THREE.ParticleBasicMaterial({
-        color: '0xffffff',
-        map: THREE.ImageUtils.loadTexture(
-                SNAKE.IMAGES + '/bubble.png'
-                ),
+    var material = new THREE.PointsMaterial({
+        color: new THREE.Color(Math.random(1), Math.random(4),Math.random()),
+        map: new THREE.TextureLoader().load(BOT.IMAGES+'/bubble.png'),
         depthTest:false,
         blending: THREE.AdditiveBlending,  // Transparent
         transparent: 1,
         opacity: 1,
         size:size
     });
-    material.color.setHSV(Math.random(), 1, 1);
-
-    var particles = new THREE.ParticleSystem(geometry, material);
+    
+    var particles = new THREE.Points(geometry, material);
+    particles.geometry.color = new THREE.Color(0.1,0.3,0.4)
     particles.rotation.x = Math.random() * 15;
     particles.rotation.y = Math.random() * 15;
     particles.rotation.z = Math.random() * 15;
@@ -47,12 +44,12 @@ var introStars = function(options) {
 
     for (var i=0; i<BEAMS; i++) {
         var beamMaterial = new THREE.MeshBasicMaterial({
-            opacity: 0.15,
+            opacity: 0.5,
             blending: THREE.AdditiveBlending,
             depthTest: false
         });
-        beamMaterial.color = new THREE.Color();
-        beamMaterial.color.setHSV(Math.random(), 1.0, 1.0);
+        beamMaterial.color = new THREE.Color(Math.random(),Math.random(),Math.random());
+        // beamMaterial.color.setHSL(Math.random(), 1, 1.0);
         // Make beam with above created material
         var beam = new THREE.Mesh(beamGeometry, beamMaterial);
         beam.doubleSided = true;
@@ -62,15 +59,14 @@ var introStars = function(options) {
         beamGroup.add(beam);
     }
 
-    scene.add(beamGroup);
+    // scene.add(beamGroup);
 
     /*
      * Update
      */
     that.update = function() {
-        var time = Date.now() * 0.00001;
         particles.rotation.y = Date.now() * 0.00005;
-        material.color.setHSV(time % 1, 1, 1);
+        particles.geometry.color.set(Math.random(1), Math.random(4),Math.random());
 
         beamGroup.rotation.x += ROTATION;
         beamGroup.rotation.y += ROTATION;
