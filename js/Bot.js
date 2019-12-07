@@ -76,15 +76,13 @@ var bot = function (scene) {
         return Math.sqrt(dx * dx + dy * dy);
     };
 
-    /*
-     * Returns if player collides with fruit = distance < fruit radius
-     */
-    that.collidesWith = function (fruit) {
-        return (fruit && pythagorasDistance(BOT[0].position, fruit.getPosition()) < fruit.getRadius());
+    
+    that.collidesWith = function (obstacle) {
+        return obstacle.x ;
     };
 
     that.bulletPlayerCollision = function (player) {
-        if( bullet.position.x == player.getPosition().x && bullet.position.y == player.getPosition().y){
+        if( Math.abs(bullet.position.x - player.getPosition().x) <= BOT.TILE_SIZE && Math.abs(bullet.position.y - player.getPosition().y)<= BOT.TILE_SIZE){
             return true
         }
         return false
@@ -157,7 +155,7 @@ var bot = function (scene) {
                 direction = RIGHT;
 
             }
-            var moveBy = 1;
+            var moveBy = 0;
             switch (direction) {
                 case UP:
                     head.position.y += moveBy;

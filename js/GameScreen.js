@@ -1,6 +1,13 @@
 /*
  * GameScreen
  */
+
+/**
+ * TODO: fix bot bullet thru obstacles
+ * fix player through obstacle
+ * add the smiley face
+ * add sounds?
+ */
 var GameScreen = Class.extend({
     /*
      * Init
@@ -34,13 +41,8 @@ var GameScreen = Class.extend({
                 this.cameraPosition = { x: -120, y: -50, z: 250 };
                 break;
             case 2:
-                this.cameraPosition = { x: 0, y: -100, z: 120 };
-                this.size = {
-                    x_min: - this.getXMax() + BOT.TILE_SIZE,
-                    x_max: this.getXMax() - BOT.TILE_SIZE,
-                    y_min: - this.getYMax() + BOT.TILE_SIZE,
-                    y_max: this.getYMax() - BOT.TILE_SIZE
-                };
+                this.cameraPosition = { x: -120, y: -50, z: 250 };
+                this.size = { x_min: -100, x_max: 100, y_min: -80, y_max: 80 };
                 this.stars = starField({
                     scene: this.scene,
                     stars: 50000,
@@ -51,7 +53,7 @@ var GameScreen = Class.extend({
                 this.cameraUpdate = true;
                 break;
             case 3:
-                this.size = { x_min: -100, x_max: 100, y_min: -40, y_max: 40 };
+                this.size = { x_min: -100, x_max: 100, y_min: -80, y_max: 80 };
                 this.stars = starField({
                     scene: this.scene,
                     stars: 30000,
@@ -59,11 +61,11 @@ var GameScreen = Class.extend({
                 });
                 this.botsToKill = 6;
                 this.randomBotSize = true;
-                this.cameraPosition = { x: 20, y: -120, z: 300 };
+                this.cameraPosition = { x: -120, y: -50, z: 250 };
                 this.cameraUpdate = true;
                 break;
             case 4:
-                this.size = { x_min: -100, x_max: 100, y_min: -40, y_max: 40 };
+                this.size = { x_min: -100, x_max: 100, y_min: -80, y_max: 80 };
                 this.stars = starField({
                     scene: this.scene,
                     stars: 30000,
@@ -71,7 +73,7 @@ var GameScreen = Class.extend({
                 });
                 this.botsToKill = 15;
                 this.randomBotSize = false;
-                this.cameraPosition = { x: 20, y: 50, z: 340 };
+                this.cameraPosition = { x: -120, y: -50, z: 250 };
                 this.cameraUpdate = true;
                 break;
         }
@@ -157,39 +159,30 @@ var GameScreen = Class.extend({
     },
     addObstacles: function () {
         this.obstacles = [];
-        if (this.level > 1) {
-            return;
-        }
+        // if (this.level > 1) {
+        //     return;
+        // }
         // bottom
-        for (var x = -52; x < 52; x = x + BOT.TILE_SIZE) {
-            var position = { x: x, y: -40 };
-            this.obstacles.push(position);
-            this.createWall(position);
+        obstacles_map = obstacles[this.level - 1]
+        x = obstacles_map["x"]
+        for (var i = 0; i < x.length; i++) {
+            range = x[i]
+            for (var y = range["y_min"]; y < range["y_max"]; y += BOT.TILE_SIZE) {
+                var position = { x: range["x_val"], y: y };
+                this.obstacles.push(position);
+                this.createWall(position);
+            }
         }
-        // right
-        for (var y = -40; y < 8; y = y + BOT.TILE_SIZE) {
-            var position = { x: 52, y: y };
-            this.obstacles.push(position);
-            this.createWall(position);
+        y = obstacles_map["y"]
+        for (var i = 0; i < y.length; i++) {
+            range = y[i]
+            for (var x = range["x_min"]; x < range["x_max"]; x += BOT.TILE_SIZE) {
+                var position = { y: range["y_val"], x: x };
+                this.obstacles.push(position);
+                this.createWall(position);
+            }
         }
-        // left
-        for (var y = -40; y < 8; y = y + BOT.TILE_SIZE) {
-            var position = { x: -52, y: y };
-            this.obstacles.push(position);
-            this.createWall(position);
-        }
-        // left eye
-        for (var y = 0; y < 36; y = y + BOT.TILE_SIZE) {
-            var position = { x: 20, y: y };
-            this.obstacles.push(position);
-            this.createWall(position);
-        }
-        // right eye
-        for (var y = 0; y < 36; y = y + BOT.TILE_SIZE) {
-            var position = { x: -20, y: y };
-            this.obstacles.push(position);
-            this.createWall(position);
-        }
+
     },
 
     /*
@@ -199,7 +192,7 @@ var GameScreen = Class.extend({
         this.camera.position.x = this.cameraPosition.x;
         this.camera.position.y = this.cameraPosition.y;
         this.camera.position.z = this.cameraPosition.z;
-        // this.camera.lookAt(this.scene.position);
+        this.camera.lookAt(this.scene.position);
     },
 
     /*
@@ -240,16 +233,16 @@ var GameScreen = Class.extend({
      */
     createWalls: function () {
         // Top and bottom wall
-        for (var x = this.size.x_min; x < this.size.x_max; x = x + BOT.TILE_SIZE) {
-            this.createWall({ x: x, y: this.size.y_max });
-            this.createWall({ x: x, y: this.size.y_min });
-        }
+        // for (var x = this.size.x_min; x < this.size.x_max; x = x + BOT.TILE_SIZE) {
+        //     this.createWall({ x: x, y: this.size.y_max });
+        //     this.createWall({ x: x, y: this.size.y_min });
+        // }
 
-        // Left and right wall
-        for (var y = this.size.y_min; y < this.size.y_max; y = y + BOT.TILE_SIZE) {
-            this.createWall({ x: this.size.x_min, y: y });
-            this.createWall({ x: this.size.x_max, y: y });
-        }
+        // // Left and right wall
+        // for (var y = this.size.y_min; y < this.size.y_max; y = y + BOT.TILE_SIZE) {
+        //     this.createWall({ x: this.size.x_min, y: y });
+        //     this.createWall({ x: this.size.x_max, y: y });
+        // }
     },
 
     /*
@@ -297,11 +290,11 @@ var GameScreen = Class.extend({
     checkBounds: function () {
         var pos = this.player.getPosition();
 
-        if (pos.x < (this.size.x_min + BOT.TILE_SIZE) || pos.x > (this.size.x_max - BOT.TILE_SIZE) ||
-            pos.y < (this.size.y_min + BOT.TILE_SIZE) || pos.y > this.size.y_max - BOT.TILE_SIZE) {
+        // if (pos.x < (this.size.x_min ) || pos.x > (this.size.x_max - BOT.TILE_SIZE) ||
+        //     pos.y < (this.size.y_min ) || pos.y > this.size.y_max - BOT.TILE_SIZE) {
 
-            this.player.die();
-        }
+        //     this.player.die();
+        // }
 
         // indexOf?
         var length = this.obstacles.length;
@@ -313,11 +306,21 @@ var GameScreen = Class.extend({
             }
         }
     },
-    checkBulletBounds: function () {
+    checkPlayerBulletBounds: function () {
 
         if (!this.player.getBullet())
             return
         pos = this.player.getBulletPosition()
+        var length = this.obstacles.length;
+        var obstacle;
+        for (var j = 0; j < length; j++) {
+            obstacle = this.obstacles[j];
+            if ((pos.x <= obstacle.x + BOT.TILE_SIZE && pos.x >= obstacle.x - BOT.TILE_SIZE)
+                && (pos.y <= obstacle.y + BOT.TILE_SIZE && pos.y >= obstacle.y - BOT.TILE_SIZE)) {
+                this.player.bulletDie();
+                return
+            }
+        }
         if (pos.x < (this.size.x_min + BOT.TILE_SIZE) || pos.x > (this.size.x_max - BOT.TILE_SIZE) ||
             pos.y < (this.size.y_min + BOT.TILE_SIZE) || pos.y > this.size.y_max - BOT.TILE_SIZE) {
 
@@ -329,6 +332,17 @@ var GameScreen = Class.extend({
         if (!this.bot.getBullet())
             return
         pos = this.bot.getBulletPosition()
+        var length = this.obstacles.length;
+        var obstacle;
+        for (var j = 0; j < length; j++) {
+            obstacle = this.obstacles[j];
+            if (pos.x <= obstacle.x + BOT.TILE_SIZE && pos.x >= obstacle.x - BOT.TILE_SIZE
+                && pos.y <= obstacle.y + BOT.TILE_SIZE && pos.y >= obstacle.y - BOT.TILE_SIZE) {
+                console.log(true)
+                this.bot.bulletDie();
+                return
+            }
+        }
         if (pos.x < (this.size.x_min + BOT.TILE_SIZE) || pos.x > (this.size.x_max - BOT.TILE_SIZE) ||
             pos.y < (this.size.y_min + BOT.TILE_SIZE) || pos.y > this.size.y_max - BOT.TILE_SIZE) {
 
@@ -344,7 +358,7 @@ var GameScreen = Class.extend({
                 var bot2 = this.bots[i]
                 var bot1Pos = this.bots[i].getPosition()
                 var bot2Pos = this.bots[j].getPosition()
-                if (this.bot.distance(bot1Pos,bot2Pos)<2*bot1.getRadius()) {
+                if (this.bot.distance(bot1Pos, bot2Pos) < 2 * bot1.getRadius()) {
                     removeIthBot = true
                     this.scene.remove(this.bots[i].getSphereObject())
                     this.scene.remove(this.bots[j].getSphereObject())
@@ -353,7 +367,7 @@ var GameScreen = Class.extend({
 
                 }
             }
-            if(removeIthBot){
+            if (removeIthBot) {
                 this.bots.splice(i, 1);
                 this.botsToKill--;
                 i--;
@@ -429,10 +443,7 @@ var GameScreen = Class.extend({
     checkBots: function () {
         var pos = this.player.getPosition();
 
-        if (pos.x < (this.size.x_min + BOT.TILE_SIZE) || pos.x > (this.size.x_max - BOT.TILE_SIZE) ||
-            pos.y < (this.size.y_min + BOT.TILE_SIZE) || pos.y > this.size.y_max - BOT.TILE_SIZE){
-            this.player.die();
-        }
+
 
         // indexOf?
         var length = this.bots.length;
@@ -480,19 +491,24 @@ var GameScreen = Class.extend({
         for (var i = 0; i < length; i++) {
             var botPos = this.bots[i].getPosition()
 
-            if ((botPos.x - this.player.getPosition().x) != 0)
+            if (Math.abs(botPos.x - this.player.getPosition().x)>=BOT.TILE_SIZE) {
+                direction = Math.sign(botPos.x - this.player.getPosition().x)
                 pos = {
-                    x: botPos.x - (botPos.x - this.player.getPosition().x) / Math.abs((botPos.x - this.player.getPosition().x) * 4),
+                    x: botPos.x - direction*0.2, //(botPos.x - this.player.getPosition().x) / Math.abs((botPos.x - this.player.getPosition().x) * 4),
                     y: botPos.y
                 }
-            else
+            } else {
+                direction = Math.sign(botPos.y - this.player.getPosition().y)
                 pos = {
                     x: botPos.x,
-                    y: botPos.y - (botPos.y - this.player.getPosition().y) / Math.abs((botPos.y - this.player.getPosition().y) * 4)
+                    y: botPos.y - direction*0.2 //(botPos.y - this.player.getPosition().y) / Math.abs((botPos.y - this.player.getPosition().y) * 4)
                 }
+            }
             this.bots[i].setPosition(pos)
+
         }
-    },
+    }
+    ,
 
     /*
      * Pad zeros. (1123, 9) Returns 000001123
@@ -514,7 +530,13 @@ var GameScreen = Class.extend({
      */
     updateLevelGoal: function () {
         var current = this.botsToKill - this.botsKilled;
-        if (current == 0) {
+        outOfMaze = false;
+        pos = this.player.getPosition()
+        if (pos.x < (this.size.x_min + BOT.TILE_SIZE) || pos.x > (this.size.x_max - BOT.TILE_SIZE) ||
+            pos.y < (this.size.y_min + BOT.TILE_SIZE) || pos.y > this.size.y_max - BOT.TILE_SIZE) {
+            outOfMaze = true;
+        }
+        if (outOfMaze) {
             this.levelFinished = true;
             $('#goal').html('Woo! Done! :D');
             if (this.level == this.lastLevel) {
@@ -552,11 +574,11 @@ var GameScreen = Class.extend({
             }
             this.moveBotTowardsTarget()
             this.botShoot();
-            this.updateLevelGoal()
+            this.updateLevelGoal();
             this.player.updateBullet();
             this.bot.updateBullet();
             this.checkBotBulletBounds();
-            this.checkBulletBounds();
+            this.checkPlayerBulletBounds();
             this.checkBotBounds();
             this.checkBots();
             this.checkBounds();

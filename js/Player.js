@@ -12,7 +12,7 @@ var player = function (scene, startPosition) {
     /*
      * Creates player
      */
-    var createPlayer = function (length) {
+    var createPlayer = function () {
         var head = new THREE.Mesh(geometry, material);
 
         // Start in middle of screen facing right
@@ -78,7 +78,7 @@ var player = function (scene, startPosition) {
 
         // Calculate time since the last frame
 
-        var moveBy = 1;
+        var moveBy = 2;
         switch (bullet.direction) {
             case UP:
                 bullet.position.y += moveBy;
@@ -128,7 +128,7 @@ var player = function (scene, startPosition) {
                 direction = RIGHT;
 
             }
-            var moveBy = TILE_SIZE;
+            var moveBy = 2;
             switch (direction) {
                 case UP:
                     head.position.y += moveBy;
@@ -240,7 +240,7 @@ var player = function (scene, startPosition) {
     var dead = false;
     var lockBulletPress = false;
 
-    createPlayer(4); // TODO: Remove the parameter
+    createPlayer(); // TODO: Remove the parameter
 
     return that;
 };
