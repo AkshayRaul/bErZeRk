@@ -6,8 +6,58 @@ var player = function (scene, startPosition) {
     var LEFT = 2;
     var RIGHT = 3;
     var defaultDirection = UP;
-
+    var clock = new THREE.Clock()
+    var playerModel = null
     var input = playerInput();
+
+    var createModel = function () {
+
+        var loader = new THREE.GLTFLoader();
+       
+        that.animations = []
+        obj = that
+        var loader = loader.load('./js/libs/Soldier.glb', function (gltf) {
+            const model = gltf.scene.children[0];
+            model.position.copy(new THREE.Vector3(startPosition.x, startPosition.y, -2));
+            model.scale.set(0.1, 0.1, 0.1)
+            model.rotation.set(0, 0, 0)
+            playerModel = model
+            const animations = gltf.animations;
+            for (var i = 0; i < animations.length; i++)
+                obj.animations.push(animations[i]);
+
+            mixer = new THREE.AnimationMixer(model);
+            
+
+            const action = mixer.clipAction(animations[0]);
+            action.play();
+            that.mixer =  mixer
+            gameScene.add(model);
+            model.traverse(function (object) {
+                if (object.isMesh) object.castShadow = true;
+            });
+            //
+            skeleton = new THREE.SkeletonHelper(model);
+            skeleton.visible = false;
+            gameScene.add(skeleton);
+            obj.mixer = mixer
+            animate()
+        },
+            // called while loading is progressing
+            function (xhr) {
+
+                console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+
+            },
+            // called when loading has errors
+            function (error) {
+
+                console.log(error);
+
+            }
+        );
+    }
+
 
     /*
      * Creates player
@@ -18,7 +68,8 @@ var player = function (scene, startPosition) {
         // Start in middle of screen facing right
         head.position.x = startPosition.x;
         head.position.y = startPosition.y;
-        scene.add(head);
+
+        // scene.add(head);
         player.push(head);
 
 
@@ -97,6 +148,22 @@ var player = function (scene, startPosition) {
 
 
     };
+    animate = function () {
+        // Render loop
+        // Get the time elapsed since the last frame, used for mixer update (if not in single step mode)
+        
+        var mixerUpdateDelta = clock.getDelta();
+        // If in single step mode, make one step and then do nothing (until the user clicks again)
+        sizeOfNextStep = 2
+        if ( true ) {
+            mixerUpdateDelta = sizeOfNextStep;
+            sizeOfNextStep = 0;
+        }
+        // Update the animation mixer, the stats panel, and render this frame
+        that.mixer.update(mixerUpdateDelta);
+        
+
+    }
 
     that.update = function () {
         input.update();  // This needed?
@@ -107,44 +174,68 @@ var player = function (scene, startPosition) {
         timeSinceLastFrame = timeSinceLastFrame - dt;
 
         // Update player at 25 FPS
+        var action = that.mixer.clipAction(that.animations[1])
+        action.play()
         if (timeSinceLastFrame <= 0) {
+
             timeSinceLastFrame = timeBetweenFrames;
 
             if (dead) {
                 updateDeathAnimation();
                 return;
             }
+            // if(that.mixer!=null){
+            //     action.paused =  true
+            // }
+           
 
             var head = player[0];
+            
             if (input.buttons[input.BUTTON_UP]) {
                 direction = UP;
+                animate();
+
             } else if (input.buttons[input.BUTTON_DOWN]) {
                 direction = DOWN;
+                animate();
+
 
             } else if (input.buttons[input.BUTTON_LEFT]) {
                 direction = LEFT;
+                animate();
+
 
             } else if (input.buttons[input.BUTTON_RIGHT]) {
                 direction = RIGHT;
+                animate();
 
             }
+            
             var moveBy = 2;
             switch (direction) {
                 case UP:
                     head.position.y += moveBy;
+                    playerModel.position.y += moveBy;
+                    playerModel.rotation.z=0    
                     break;
                 case DOWN:
                     head.position.y -= moveBy;
+                    playerModel.position.y -= moveBy;
+                    playerModel.rotation.z=Math.PI   
                     break;
                 case LEFT:
                     head.position.x -= moveBy;
+                    playerModel.position.x -= moveBy;
+                    playerModel.rotation.z=Math.PI / 2  
                     break;
                 case RIGHT:
                     head.position.x += moveBy;
+                    playerModel.position.x += moveBy;
+                    playerModel.rotation.z=-Math.PI / 2  
                     break;
             }
             if (input.buttons[input.SPACE]) {
-                if (!lockBulletPress){
+                if (!lockBulletPress) {
                     bullet = createBullet(lastDirection)
                     lockBulletPress = true;
                 }
@@ -168,20 +259,28 @@ var player = function (scene, startPosition) {
             bodyPart.position.z += bodyPart.vz;
             bodyPart.rotation.x += 0.3;
         }
+        for (var i = 1; i < length; i++) {
+
+            playerModel.position.x += Math.random() * 2 * (Math.random() > 0.5 ? -10 : 10);
+            playerModel.position.y += Math.random() * 2 * (Math.random() > 0.5 ? -1 : 1);
+            playerModel.position.z += Math.random() * 3 * (Math.random() > 0.5 ? -1 : 1);
+        }
+        scene.remove(playerModel)
+
 
         // Update color hue. Rotating from 0.0 --> 1.0
         var time = Date.now() * 0.00005;
         // material.color.setHSL(time % 1, 1, 1);
     };
 
-    that.bulletDie =  function(){
+    that.bulletDie = function () {
         deadBullet = bullet
         deadBullet.x += Math.random() * 2 * (Math.random() > 0.5 ? -1 : 1);
         deadBullet.y += Math.random() * 2 * (Math.random() > 0.5 ? -1 : 1);
         deadBullet.z += Math.random() * 3 * (Math.random() > 0.5 ? -1 : 1);
-        deadBullet.rotation.x +=0.03
-        deadBullet.rotation.y +=0.3
-        bullet=false
+        deadBullet.rotation.x += 0.03
+        deadBullet.rotation.y += 0.3
+        bullet = false
         lockBulletPress = false;
 
     }
@@ -203,7 +302,7 @@ var player = function (scene, startPosition) {
             bodyPart.vy = Math.random() * 2 * (Math.random() > 0.5 ? -1 : 1);
             bodyPart.vz = Math.random() * 3 * (Math.random() > 0.5 ? -1 : 1);
         }
-
+       
         dead = true;
 
         // Show game over box
@@ -211,9 +310,9 @@ var player = function (scene, startPosition) {
     };
 
     that.getPosition = function () {
-        return { 
-            x: player[0].position.x, 
-            y: player[0].position.y 
+        return {
+            x: player[0].position.x,
+            y: player[0].position.y
         };
     };
     that.getBulletPosition = function () {
@@ -222,7 +321,7 @@ var player = function (scene, startPosition) {
             y: bullet.position.y
         }
     }
-    that.getBullet =  function(){
+    that.getBullet = function () {
         return bullet;
     }
     // Player color, material etc
@@ -240,7 +339,7 @@ var player = function (scene, startPosition) {
     var dead = false;
     var lockBulletPress = false;
 
-    createPlayer(); // TODO: Remove the parameter
-
+    createPlayer(); 
+    createModel();
     return that;
 };

@@ -8,6 +8,7 @@
  * add the smiley face
  * add sounds?
  */
+
 var GameScreen = Class.extend({
     /*
      * Init
@@ -19,6 +20,9 @@ var GameScreen = Class.extend({
         this.level = 1;  // start at level 1
         this.lastLevel = 4;
         this.cameraUpdate = false;
+        this.clock = new THREE.Clock();
+        this.mixer = null;
+
         this.setup();
     },
 
@@ -78,6 +82,18 @@ var GameScreen = Class.extend({
                 break;
         }
 
+
+        var geometry = new THREE.PlaneGeometry(200, 160, 0);
+        texture = THREE.ImageUtils.loadTexture('images/space.jpg');
+        var material = new THREE.MeshBasicMaterial({ map:texture, side: THREE.DoubleSide });
+        var plane = new THREE.Mesh(geometry, material);
+        this.scene.add(plane)
+        gameScene = this.scene
+
+
+       
+        
+
         $('#info .level').html('Level ' + this.level);
         if (this.cameraUpdate) {
             this.updateCamera();
@@ -114,6 +130,7 @@ var GameScreen = Class.extend({
         console.log(this.player.getPosition())
 
     },
+    
 
     getXMax: function (x) {
         var DISPLAY_HEIGHT = 2 * this.cameraPosition.z * Math.tan(45 / 2 * (Math.PI / 180));
@@ -491,17 +508,17 @@ var GameScreen = Class.extend({
         for (var i = 0; i < length; i++) {
             var botPos = this.bots[i].getPosition()
 
-            if (Math.abs(botPos.x - this.player.getPosition().x)>=BOT.TILE_SIZE) {
+            if (Math.abs(botPos.x - this.player.getPosition().x) >= BOT.TILE_SIZE) {
                 direction = Math.sign(botPos.x - this.player.getPosition().x)
                 pos = {
-                    x: botPos.x - direction*0.2, //(botPos.x - this.player.getPosition().x) / Math.abs((botPos.x - this.player.getPosition().x) * 4),
+                    x: botPos.x - direction * 0.2, //(botPos.x - this.player.getPosition().x) / Math.abs((botPos.x - this.player.getPosition().x) * 4),
                     y: botPos.y
                 }
             } else {
                 direction = Math.sign(botPos.y - this.player.getPosition().y)
                 pos = {
                     x: botPos.x,
-                    y: botPos.y - direction*0.2 //(botPos.y - this.player.getPosition().y) / Math.abs((botPos.y - this.player.getPosition().y) * 4)
+                    y: botPos.y - direction * 0.2 //(botPos.y - this.player.getPosition().y) / Math.abs((botPos.y - this.player.getPosition().y) * 4)
                 }
             }
             this.bots[i].setPosition(pos)

@@ -1,16 +1,15 @@
-var startGame = function() {
+var startGame = function () {
     var that = {};
 
     // Add Stats.js - https://github.com/mrdoob/stats.js
     var stats = new Stats();
-    stats.domElement.style.position	= 'absolute';
+    stats.domElement.style.position = 'absolute';
     stats.domElement.style.top = '0px';
     stats.domElement.style.right = '5px';
     document.body.appendChild(stats.domElement);
 
     var WIDTH = window.innerWidth - 5;
     var HEIGHT = window.innerHeight - 5;
-
     // Create a WebGL renderer
     var renderer = new THREE.WebGLRenderer({
         antialias: true	// to get smoother output?
@@ -20,22 +19,22 @@ var startGame = function() {
 
     // Create foggy scene
     var scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2( 0x000000, 0.0011);
+    scene.fog = new THREE.FogExp2(0x000000, 0.0011);
 
     // Set camera attributes
     var VIEW_ANGLE = 45,
-            ASPECT = WIDTH / HEIGHT,
-            NEAR = 0.1,
-            FAR = 10000;
+        ASPECT = WIDTH / HEIGHT,
+        NEAR = 0.1,
+        FAR = 10000;
     var CAMERA_POSITION = 250;
     var TILE_SIZE = 4;
     // Camera yo
     var camera =
-            new THREE.PerspectiveCamera(
-                    VIEW_ANGLE,
-                    ASPECT,
-                    NEAR,
-                    FAR);
+        new THREE.PerspectiveCamera(
+            VIEW_ANGLE,
+            ASPECT,
+            NEAR,
+            FAR);
     camera.name = "save-me";
     // the camera starts at 0,0,0 so pull it back
     camera.position.x = 0;
@@ -88,6 +87,11 @@ var startGame = function() {
     light.position.set(Math.random(), Math.random(), Math.random()).normalize();
     scene.add(light);
 
+
+    
+
+        //
+
     // // Draw a partial white grid
     // var gridMaterial = new THREE.LineBasicMaterial({
     //     color: 0xffffff,
@@ -127,43 +131,43 @@ var startGame = function() {
         var updateCameraPosition = false;
         var updateCameraZoom = false;
 
-        $('canvas').mousemove(function() {
-            mouseX = event.clientX - (WIDTH/2);
-            mouseY = event.clientY - (HEIGHT/2);
+        $('canvas').mousemove(function () {
+            mouseX = event.clientX - (WIDTH / 2);
+            mouseY = event.clientY - (HEIGHT / 2);
         });
 
-        $('canvas').mousedown(function() {
+        $('canvas').mousedown(function () {
             document.body.style.cursor = "move";
             updateCameraPosition = true;
             return false;  // Disable text selection on the canvas
         });
 
-        $('canvas').mouseup(function() {
+        $('canvas').mouseup(function () {
             document.body.style.cursor = "default";
             updateCameraPosition = false;
         });
 
-        $('canvas').mousewheel(function(objEvent, intDelta){
+        $('canvas').mousewheel(function (objEvent, intDelta) {
             updateCameraZoom = true;
             mouseWheel += intDelta;
         });
     }
 
-    that.setScreen = function(newScreen) {
+    that.setScreen = function (newScreen) {
         screen = newScreen;
     };
 
-    var updateCamera = function() {
+    var updateCamera = function () {
         $('#debug').html('Camera: (' + camera.position.x.toFixed(2) + ', ' + camera.position.y.toFixed(2) + ', ' + camera.position.z.toFixed(2) + ')');
     };
 
-    $('#gameover a').click(function() {
+    $('#gameover a').click(function () {
         $('#gameover').hide('slow');
         that.setScreen(new GameScreen(that, scene, camera));
     });
 
     // Updates at 60 FPS
-    var update = function() {
+    var update = function () {
         requestAnimationFrame(update);
 
         screen.update();
@@ -194,12 +198,12 @@ var startGame = function() {
     return that;
 };
 
-$(document).ready(function() {
+$(document).ready(function () {
     // Check WebGL
-    if (! Detector.webgl){
+    if (!Detector.webgl) {
         Detector.addGetWebGLMessage();
         return;
     }
-    
+
     startGame();
 });

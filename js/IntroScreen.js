@@ -9,7 +9,8 @@ var IntroScreen = Class.extend({
             stars: 10000,
             size:3
         });
- 
+        
+
         $('#intro a').click(function() {
             $('#intro').hide('slow');
             game.setScreen(new GameScreen(game, scene, camera));
