@@ -77,53 +77,15 @@ var startGame = function () {
     // add to the scene
     scene.add(pointLight);
 
-    // Moar lights!
-    var light = new THREE.DirectionalLight(Math.random() * 0xffffff);
-    light.name = "save-me";
-    light.position.set(Math.random(), Math.random(), Math.random()).normalize();
-    scene.add(light);
-    var light = new THREE.DirectionalLight(Math.random() * 0xffffff);
-    light.name = "save-me";
-    light.position.set(Math.random(), Math.random(), Math.random()).normalize();
-    scene.add(light);
+    
 
+    scene.background = new THREE.TextureLoader().load('images/star_wars.jpg')
 
     
 
-        //
-
-    // // Draw a partial white grid
-    // var gridMaterial = new THREE.LineBasicMaterial({
-    //     color: 0xffffff,
-    //     opacity: 0.2
-    // });
-    // // Horizontal lines
-    // var x_geometry = new THREE.Geometry();
-    // x_geometry.vertices.push(new THREE.Vector3(X_MIN, 0, 0));
-    // x_geometry.vertices.push(new THREE.Vector3(X_MAX, 0, 0));
-
-    // var grid = new THREE.Object3D();
-    // grid.name = "save-me";
-    // for (var y=2; y<Y_MAX; y=y+TILE_SIZE) {
-    //     var line = new THREE.Line(x_geometry, gridMaterial);
-    //     line.position.y = y;
-    //     grid.add(line);
-    // }
-    // // Vertical lines
-    // var y_geometry = new THREE.Geometry();
-    // y_geometry.vertices.push(new THREE.Vector3(0, Y_MAX, 0));
-    // y_geometry.vertices.push(new THREE.Vector3(0, Y_MIN, 0));
-    // for (var x=2; x<X_MAX; x=x+TILE_SIZE) {
-    //     var line = new THREE.Line(y_geometry, gridMaterial);
-    //     line.position.x = x;
-    //     grid.add(line);
-    // }
-
-    // // scene.add(grid);
-
+  
     $('#intro').show();
 
-    // Camera movement <-------------------------------------------------------
     if (BOT.CAMERA_DEBUG) {
         var mouseX;
         var mouseY;

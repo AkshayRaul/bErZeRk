@@ -76,9 +76,8 @@ var player = function (scene, startPosition) {
     };
 
     var createBullet = function (direction) {
-        var color24 = Math.random() * 255 << 16 | Math.random() * 255 << 8 | Math.random() * 255;
-        var geometry = new THREE.CubeGeometry(BOT.TILE_SIZE, BOT.TILE_SIZE, BOT.TILE_SIZE * 0.3);
-        var material = new THREE.MeshLambertMaterial({ color: color24 });
+        var geometry = new THREE.CubeGeometry(BOT.TILE_SIZE, BOT.TILE_SIZE, BOT.TILE_SIZE );
+        var material = new THREE.MeshLambertMaterial({ color: '#002395' });
         var bullet = new THREE.Mesh(geometry, material);
         bullet.position.x = player[0].position.x;
         bullet.position.y = player[0].position.y;

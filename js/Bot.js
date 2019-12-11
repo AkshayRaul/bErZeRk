@@ -7,6 +7,9 @@ var bot = function (scene) {
     var RIGHT = 3;
     var defaultDirection = UP;
 
+    that.getRadius = function(){
+        return 5
+    }
 
     /*
      * Creates BOT
@@ -30,25 +33,30 @@ var bot = function (scene) {
     
     }
 
-    var createBullet = function (playerPos,botPos) {
-        var color24 = Math.random() * 255 << 16 | Math.random() * 255 << 8 | Math.random() * 255;
+    var createBullet = function (playerPos,bot) {
         var geometry = new THREE.CubeGeometry(BOT.TILE_SIZE, BOT.TILE_SIZE, BOT.TILE_SIZE * 0.3);
-        var material = new THREE.MeshLambertMaterial({ color: 'red' });
+        var material = new THREE.MeshLambertMaterial({ color: '#990000' });
         var bullet = new THREE.Mesh(geometry, material);
         bullet.position.x = Math.ceil(pos.x);
         bullet.position.y = Math.ceil(pos.y);
-        botPos = botPos.getPosition()
+        botPos = bot.getPosition()
         playerPos = playerPos.getPosition()
         if(Math.abs(botPos.x-playerPos.x)<Math.abs(botPos.y-playerPos.y)){
             if(botPos.y-playerPos.y>0){
                 direction = DOWN
-            }else
+                bullet.position.y-=bot.getRadius() 
+            }else{
                 direction = UP
+                bullet.position.y+=bot.getRadius() 
+            }
         }else{
             if(botPos.x-playerPos.x>0){
                 direction = LEFT
-            }else
+                bullet.position.x-=bot.getRadius() 
+            }else{
                 direction = RIGHT
+                bullet.position.x+=bot.getRadius() 
+            }
         }
         bullet.direction = direction
         scene.add(bullet);

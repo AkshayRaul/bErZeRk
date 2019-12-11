@@ -3,10 +3,7 @@
  */
 
 /**
- * TODO: fix bot bullet thru obstacles
- * fix player through obstacle
- * add the smiley face
- * add sounds?
+ * 
  */
 
 var GameScreen = Class.extend({
@@ -17,12 +14,11 @@ var GameScreen = Class.extend({
         this.game = game;
         this.scene = scene;
         this.camera = camera;
-        this.level = 1;  // start at level 1
-        this.lastLevel = 4;
+        this.level = 3;  // start at level 1
+        this.lastLevel = 3;
         this.cameraUpdate = false;
         this.clock = new THREE.Clock();
         this.mixer = null;
-
         this.setup();
     },
 
@@ -82,16 +78,17 @@ var GameScreen = Class.extend({
                 break;
         }
 
-
+        
         var geometry = new THREE.PlaneGeometry(200, 160, 0);
-        texture = THREE.ImageUtils.loadTexture('images/space.jpg');
+        texture = new THREE.TextureLoader().load('images/space.jpg');
         var material = new THREE.MeshBasicMaterial({ map:texture, side: THREE.DoubleSide });
         var plane = new THREE.Mesh(geometry, material);
         this.scene.add(plane)
+
+        this.wallTexture = new THREE.TextureLoader().load('images/star.png');
+
         gameScene = this.scene
 
-
-       
         
 
         $('#info .level').html('Level ' + this.level);
@@ -234,9 +231,9 @@ var GameScreen = Class.extend({
      * Creates a random colored bit of wall at position (x, y)
      */
     createWall: function (position) {
-        var color24 = Math.random() * 255 << 16 | Math.random() * 255 << 8 | Math.random() * 255;
-        var geometry = new THREE.CubeGeometry(BOT.TILE_SIZE, BOT.TILE_SIZE, BOT.TILE_SIZE + 2);
-        var material = new THREE.MeshLambertMaterial({ color: color24 });
+        var color24 = 0
+        var geometry = new THREE.CubeGeometry(BOT.TILE_SIZE, BOT.TILE_SIZE, BOT.TILE_SIZE + 20);
+        var material = new THREE.MeshLambertMaterial({ map: this.wallTexture });
         var wallBit = new THREE.Mesh(geometry, material);
         wallBit.position.x = position.x;
         wallBit.position.y = position.y;
@@ -249,17 +246,7 @@ var GameScreen = Class.extend({
      * Creates a random colored square
      */
     createWalls: function () {
-        // Top and bottom wall
-        // for (var x = this.size.x_min; x < this.size.x_max; x = x + BOT.TILE_SIZE) {
-        //     this.createWall({ x: x, y: this.size.y_max });
-        //     this.createWall({ x: x, y: this.size.y_min });
-        // }
-
-        // // Left and right wall
-        // for (var y = this.size.y_min; y < this.size.y_max; y = y + BOT.TILE_SIZE) {
-        //     this.createWall({ x: this.size.x_min, y: y });
-        //     this.createWall({ x: this.size.x_max, y: y });
-        // }
+       
     },
 
     /*
@@ -307,18 +294,12 @@ var GameScreen = Class.extend({
     checkBounds: function () {
         var pos = this.player.getPosition();
 
-        // if (pos.x < (this.size.x_min ) || pos.x > (this.size.x_max - BOT.TILE_SIZE) ||
-        //     pos.y < (this.size.y_min ) || pos.y > this.size.y_max - BOT.TILE_SIZE) {
-
-        //     this.player.die();
-        // }
-
         // indexOf?
         var length = this.obstacles.length;
         var obstacle;
         for (var i = 0; i < length; i++) {
             obstacle = this.obstacles[i];
-            if (obstacle.x == pos.x && obstacle.y == pos.y) {
+            if (Math.abs(obstacle.x-pos.x)<=BOT.TILE_SIZE && Math.abs(obstacle.y -pos.y)<=BOT.TILE_SIZE) {
                 this.player.die();
             }
         }
@@ -535,11 +516,9 @@ var GameScreen = Class.extend({
         return Array(+(zero > 0 && zero)).join("0") + num;
     },
 
-    /*
-     * Sets user score. Both in info and game over box
-     */
+  
     setScore: function (score) {
-        $('.score').html(this.zeroPad(score, 9));
+        $('.score').html(score);
     },
 
     /*
