@@ -44,18 +44,18 @@ var bot = function (scene) {
         if(Math.abs(botPos.x-playerPos.x)<Math.abs(botPos.y-playerPos.y)){
             if(botPos.y-playerPos.y>0){
                 direction = DOWN
-                bullet.position.y-=bot.getRadius() 
+                bullet.position.y-=bot.getRadius()+1 
             }else{
                 direction = UP
-                bullet.position.y+=bot.getRadius() 
+                bullet.position.y+=bot.getRadius() +1
             }
         }else{
             if(botPos.x-playerPos.x>0){
                 direction = LEFT
-                bullet.position.x-=bot.getRadius() 
+                bullet.position.x-=bot.getRadius() +1
             }else{
                 direction = RIGHT
-                bullet.position.x+=bot.getRadius() 
+                bullet.position.x+=bot.getRadius() +1
             }
         }
         bullet.direction = direction
@@ -207,6 +207,13 @@ var bot = function (scene) {
         // Update color hue. Rotating from 0.0 --> 1.0
         var time = Date.now() * 0.00005;
         // material.color.setHSL(time % 1, 1, 1);
+    };
+
+    that.bulletBotCollision = function (bot) {
+        if(pythagorasDistance(bullet.position,bot.getPosition())<bot.getRadius()){
+            return true
+        }
+        return false
     };
 
     that.bulletDie =  function(){

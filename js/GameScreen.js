@@ -14,7 +14,7 @@ var GameScreen = Class.extend({
         this.game = game;
         this.scene = scene;
         this.camera = camera;
-        this.level = 3;  // start at level 1
+        this.level = 1;  // start at level 1
         this.lastLevel = 3;
         this.cameraUpdate = false;
         this.clock = new THREE.Clock();
@@ -36,7 +36,7 @@ var GameScreen = Class.extend({
                     stars: 10000,
                     size: 3
                 });
-                this.botsToKill = 1;
+                this.botsToKill = 2;
                 this.randomBotSize = true;
                 this.cameraPosition = { x: -120, y: -50, z: 250 };
                 break;
@@ -78,10 +78,10 @@ var GameScreen = Class.extend({
                 break;
         }
 
-        
+
         var geometry = new THREE.PlaneGeometry(200, 160, 0);
         texture = new THREE.TextureLoader().load('images/space.jpg');
-        var material = new THREE.MeshBasicMaterial({ map:texture, side: THREE.DoubleSide });
+        var material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
         var plane = new THREE.Mesh(geometry, material);
         this.scene.add(plane)
 
@@ -89,7 +89,7 @@ var GameScreen = Class.extend({
 
         gameScene = this.scene
 
-        
+
 
         $('#info .level').html('Level ' + this.level);
         if (this.cameraUpdate) {
@@ -127,7 +127,7 @@ var GameScreen = Class.extend({
         console.log(this.player.getPosition())
 
     },
-    
+
 
     getXMax: function (x) {
         var DISPLAY_HEIGHT = 2 * this.cameraPosition.z * Math.tan(45 / 2 * (Math.PI / 180));
@@ -246,7 +246,7 @@ var GameScreen = Class.extend({
      * Creates a random colored square
      */
     createWalls: function () {
-       
+
     },
 
     /*
@@ -280,7 +280,7 @@ var GameScreen = Class.extend({
         var obstacle;
         for (var i = 0; i < length; i++) {
             obstacle = this.obstacles[i];
-            if (obstacle.x == pos.x && obstacle.y == pos.y) {
+            if (Math.abs(obstacle.x - pos.x) < this.bot.getRadius() && Math.abs(obstacle.y - pos.y)<this.bot.getRadius()) {
                 return false;
             }
         }
@@ -299,7 +299,7 @@ var GameScreen = Class.extend({
         var obstacle;
         for (var i = 0; i < length; i++) {
             obstacle = this.obstacles[i];
-            if (Math.abs(obstacle.x-pos.x)<=BOT.TILE_SIZE && Math.abs(obstacle.y -pos.y)<=BOT.TILE_SIZE) {
+            if (Math.abs(obstacle.x - pos.x) <= BOT.TILE_SIZE && Math.abs(obstacle.y - pos.y) <= BOT.TILE_SIZE) {
                 this.player.die();
             }
         }
@@ -336,7 +336,6 @@ var GameScreen = Class.extend({
             obstacle = this.obstacles[j];
             if (pos.x <= obstacle.x + BOT.TILE_SIZE && pos.x >= obstacle.x - BOT.TILE_SIZE
                 && pos.y <= obstacle.y + BOT.TILE_SIZE && pos.y >= obstacle.y - BOT.TILE_SIZE) {
-                console.log(true)
                 this.bot.bulletDie();
                 return
             }
@@ -421,6 +420,8 @@ var GameScreen = Class.extend({
                 return true
             }
         }
+
+
         return false
     },
     checkBulletPlayerCollision: function () {
@@ -433,6 +434,21 @@ var GameScreen = Class.extend({
             this.bot.bulletDie();
             // this.scene.remove(obstacle.getSphereObject())
             return true
+        }
+        if (!this.bot.getBullet())
+            return false
+        var pos = this.bot.getBulletPosition()
+        var length = this.bots.length;
+        for (var i = 0; i < length; i++) {
+            obstacle = this.bots[i];
+            var a = pos.x - obstacle.getPosition().x
+            var b = pos.y - obstacle.getPosition().y
+            if (this.bot.bulletBotCollision(obstacle)) {
+                this.scene.remove(this.bot.getBullet())
+                this.bot.bulletDie();
+                this.scene.remove(obstacle.getSphereObject())
+                this.bots.splice(i, 1)
+            }
         }
 
         return false
@@ -465,18 +481,23 @@ var GameScreen = Class.extend({
         var min = Number.MAX_SAFE_INTEGER
         var hasDistance = Number.MAX_SAFE_INTEGER
         var whichBot = 0
-        for (var i = 0; i < length; i++) {
+        var x = 0
+        for (var i = 0; i < this.bots.length; i++) {
             var bot = this.bots[i]
+            console.log(i+":"+this.bot.distance(bot.getPosition(), this.player.getPosition()))
             var distance = this.bot.distance(bot.getPosition(), this.player.getPosition())
             if (distance < hasDistance) {
-                whichBot = i
+                x = i
+                whichBot = bot
                 hasDistance = distance
             }
         }
-        if (hasDistance < 40) {
+        console.log(x)
+        if (hasDistance < 100) {
 
-            this.bot.createBotBullet(this.player, this.bots[whichBot])
+            this.bot.createBotBullet(this.player, this.bots[x] )
         }
+
 
 
     },
@@ -516,7 +537,7 @@ var GameScreen = Class.extend({
         return Array(+(zero > 0 && zero)).join("0") + num;
     },
 
-  
+
     setScore: function (score) {
         $('.score').html(score);
     },
