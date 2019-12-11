@@ -1,4 +1,4 @@
-var bot = function (scene) {
+var bot = function (scene, camera) {
     var that = {};
 
     var UP = 0;
@@ -60,6 +60,19 @@ var bot = function (scene) {
         }
         bullet.direction = direction
         scene.add(bullet);
+
+        var listener = new THREE.AudioListener();
+        camera.add(listener);
+
+        // create a global audio source
+        sound = new THREE.Audio(listener);
+        var audioLoader = new THREE.AudioLoader();
+        audioLoader.load('sounds/botShoot.mp3', function (buffer) {
+            sound.setBuffer(buffer);
+            sound.setLoop(false);
+            sound.setVolume(0.5);
+            sound.play();
+        });
         return bullet;
     }
 
@@ -231,18 +244,18 @@ var bot = function (scene) {
         if (dead) {
             return;
         }
+        var listener = new THREE.AudioListener();
+        camera.add(listener);
 
-
-        var head = BOT[whichBot];
-        head.vx = 0;
-        head.vy = 0;
-        head.vz = 4;
-
-        var bodyPart = BOT[i];
-        bodyPart.vx = Math.random() * 2 * (Math.random() > 0.5 ? -1 : 1);
-        bodyPart.vy = Math.random() * 2 * (Math.random() > 0.5 ? -1 : 1);
-        bodyPart.vz = Math.random() * 3 * (Math.random() > 0.5 ? -1 : 1);
-        
+        // create a global audio source
+        sound = new THREE.Audio(listener);
+        var audioLoader = new THREE.AudioLoader();
+        audioLoader.load('sounds/die.mp3', function (buffer) {
+            sound.setBuffer(buffer);
+            sound.setLoop(false);
+            sound.setVolume(0.5);
+            sound.play();
+        });     
 
     };
 

@@ -1,4 +1,4 @@
-var player = function (scene, startPosition) {
+var player = function (scene, camera, startPosition) {
     var that = {};
 
     var UP = 0;
@@ -13,7 +13,7 @@ var player = function (scene, startPosition) {
     var createModel = function () {
 
         var loader = new THREE.GLTFLoader();
-       
+
         that.animations = []
         obj = that
         var loader = loader.load('./js/libs/Soldier.glb', function (gltf) {
@@ -27,11 +27,11 @@ var player = function (scene, startPosition) {
                 obj.animations.push(animations[i]);
 
             mixer = new THREE.AnimationMixer(model);
-            
+
 
             const action = mixer.clipAction(animations[0]);
             action.play();
-            that.mixer =  mixer
+            that.mixer = mixer
             gameScene.add(model);
             model.traverse(function (object) {
                 if (object.isMesh) object.castShadow = true;
@@ -76,13 +76,26 @@ var player = function (scene, startPosition) {
     };
 
     var createBullet = function (direction) {
-        var geometry = new THREE.CubeGeometry(BOT.TILE_SIZE, BOT.TILE_SIZE, BOT.TILE_SIZE );
+        var geometry = new THREE.CubeGeometry(BOT.TILE_SIZE, BOT.TILE_SIZE, BOT.TILE_SIZE);
         var material = new THREE.MeshLambertMaterial({ color: '#002395' });
         var bullet = new THREE.Mesh(geometry, material);
         bullet.position.x = player[0].position.x;
         bullet.position.y = player[0].position.y;
         bullet.direction = direction
         scene.add(bullet);
+
+        var listener = new THREE.AudioListener();
+        camera.add(listener);
+
+        // create a global audio source
+        sound = new THREE.Audio(listener);
+        var audioLoader = new THREE.AudioLoader();
+        audioLoader.load('sounds/shoot.mp3', function (buffer) {
+            sound.setBuffer(buffer);
+            sound.setLoop(false);
+            sound.setVolume(0.5);
+            sound.play();
+        });
         return bullet;
     }
 
@@ -150,17 +163,17 @@ var player = function (scene, startPosition) {
     animate = function () {
         // Render loop
         // Get the time elapsed since the last frame, used for mixer update (if not in single step mode)
-        
+
         var mixerUpdateDelta = clock.getDelta();
         // If in single step mode, make one step and then do nothing (until the user clicks again)
         sizeOfNextStep = 2
-        if ( true ) {
+        if (true) {
             mixerUpdateDelta = sizeOfNextStep;
             sizeOfNextStep = 0;
         }
         // Update the animation mixer, the stats panel, and render this frame
         that.mixer.update(mixerUpdateDelta);
-        
+
 
     }
 
@@ -186,10 +199,10 @@ var player = function (scene, startPosition) {
             // if(that.mixer!=null){
             //     action.paused =  true
             // }
-           
+
 
             var head = player[0];
-            
+
             if (input.buttons[input.BUTTON_UP]) {
                 direction = UP;
                 animate();
@@ -209,28 +222,28 @@ var player = function (scene, startPosition) {
                 animate();
 
             }
-            
+
             var moveBy = 2;
             switch (direction) {
                 case UP:
                     head.position.y += moveBy;
                     playerModel.position.y += moveBy;
-                    playerModel.rotation.z=0    
+                    playerModel.rotation.z = 0
                     break;
                 case DOWN:
                     head.position.y -= moveBy;
                     playerModel.position.y -= moveBy;
-                    playerModel.rotation.z=Math.PI   
+                    playerModel.rotation.z = Math.PI
                     break;
                 case LEFT:
                     head.position.x -= moveBy;
                     playerModel.position.x -= moveBy;
-                    playerModel.rotation.z=Math.PI / 2  
+                    playerModel.rotation.z = Math.PI / 2
                     break;
                 case RIGHT:
                     head.position.x += moveBy;
                     playerModel.position.x += moveBy;
-                    playerModel.rotation.z=-Math.PI / 2  
+                    playerModel.rotation.z = -Math.PI / 2
                     break;
             }
             if (input.buttons[input.SPACE]) {
@@ -288,6 +301,20 @@ var player = function (scene, startPosition) {
             return;
         }
 
+        var listener = new THREE.AudioListener();
+        camera.add(listener);
+
+        // create a global audio source
+        sound = new THREE.Audio(listener);
+        // load a sound and set it as the Audio object's buffer
+        var audioLoader = new THREE.AudioLoader();
+        audioLoader.load('sounds/die.mp3', function (buffer) {
+            sound.setBuffer(buffer);
+            sound.setLoop(false);
+            sound.setVolume(0.5);
+            sound.play();
+        });
+        
         var length = player.length;
 
         var head = player[0];
@@ -301,7 +328,7 @@ var player = function (scene, startPosition) {
             bodyPart.vy = Math.random() * 2 * (Math.random() > 0.5 ? -1 : 1);
             bodyPart.vz = Math.random() * 3 * (Math.random() > 0.5 ? -1 : 1);
         }
-       
+
         dead = true;
 
         // Show game over box
@@ -338,7 +365,7 @@ var player = function (scene, startPosition) {
     var dead = false;
     var lockBulletPress = false;
 
-    createPlayer(); 
+    createPlayer();
     createModel();
     return that;
 };

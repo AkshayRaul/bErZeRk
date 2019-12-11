@@ -19,7 +19,17 @@ var GameScreen = Class.extend({
         this.cameraUpdate = false;
         this.clock = new THREE.Clock();
         this.mixer = null;
+        this.setupSound();
         this.setup();
+    },
+    setupSound: function(){
+        // create an AudioListener and add it to the camera
+        var listener = new THREE.AudioListener();
+        this.camera.add(listener);
+
+        // create a global audio source
+        this.sound = new THREE.Audio(listener);
+
     },
 
     /*
@@ -77,7 +87,7 @@ var GameScreen = Class.extend({
                 this.cameraUpdate = true;
                 break;
         }
-
+        
 
         var geometry = new THREE.PlaneGeometry(200, 160, 0);
         texture = new THREE.TextureLoader().load('images/space.jpg');
@@ -97,11 +107,11 @@ var GameScreen = Class.extend({
         }
 
         this.createWalls();
-        this.player = player(this.scene, {
+        this.player = player(this.scene, this.camera, {
             x: this.size.x_min + 32, // Needs to be % 4 == 0
             y: this.size.y_min + 16
         });
-        this.bot = bot(this.scene);
+        this.bot = bot(this.scene, this.camera);
         this.addObstacles();
 
         // Set valid bot positions
@@ -280,7 +290,7 @@ var GameScreen = Class.extend({
         var obstacle;
         for (var i = 0; i < length; i++) {
             obstacle = this.obstacles[i];
-            if (Math.abs(obstacle.x - pos.x) < this.bot.getRadius() && Math.abs(obstacle.y - pos.y)<this.bot.getRadius()) {
+            if (Math.abs(obstacle.x - pos.x) < this.bot.getRadius() && Math.abs(obstacle.y - pos.y) < this.bot.getRadius()) {
                 return false;
             }
         }
@@ -365,6 +375,7 @@ var GameScreen = Class.extend({
                 }
             }
             if (removeIthBot) {
+                this.bot.die(this.bots[i]);
                 this.bots.splice(i, 1);
                 this.botsToKill--;
                 i--;
@@ -377,6 +388,7 @@ var GameScreen = Class.extend({
             if (Math.abs(pos.x - this.size.x_min) < bot.getRadius() || Math.abs(pos.x - this.size.x_max) < bot.getRadius() ||
                 Math.abs(pos.y - this.size.y_min) < bot.getRadius() || Math.abs(pos.y - this.size.y_max) < bot.getRadius()) {
                 this.scene.remove(this.bots[i].getSphereObject())
+                this.bot.die(bot);
                 this.bots.splice(i, 1);
                 this.botsToKill--;
             }
@@ -392,6 +404,7 @@ var GameScreen = Class.extend({
                 obstacle = this.obstacles[j];
                 if (Math.abs(pos.x - obstacle.x) < bot.getRadius() && Math.abs(pos.y - obstacle.y) < bot.getRadius()) {
                     this.scene.remove(this.bots[i].getSphereObject())
+                    this.bot.die(bot);
                     this.bots.splice(i, 1);
                     i--;
                     this.botsToKill--;
@@ -415,6 +428,7 @@ var GameScreen = Class.extend({
             if (this.player.bulletBotCollision(obstacle)) {
                 this.scene.remove(this.player.getBullet())
                 this.player.bulletDie();
+                this.bot.die(obstacle);
                 this.scene.remove(obstacle.getSphereObject())
                 this.bots.splice(i, 1)
                 return true
@@ -484,7 +498,6 @@ var GameScreen = Class.extend({
         var x = 0
         for (var i = 0; i < this.bots.length; i++) {
             var bot = this.bots[i]
-            console.log(i+":"+this.bot.distance(bot.getPosition(), this.player.getPosition()))
             var distance = this.bot.distance(bot.getPosition(), this.player.getPosition())
             if (distance < hasDistance) {
                 x = i
@@ -492,10 +505,9 @@ var GameScreen = Class.extend({
                 hasDistance = distance
             }
         }
-        console.log(x)
         if (hasDistance < 100) {
 
-            this.bot.createBotBullet(this.player, this.bots[x] )
+            this.bot.createBotBullet(this.player, this.bots[x])
         }
 
 
@@ -554,6 +566,13 @@ var GameScreen = Class.extend({
             outOfMaze = true;
         }
         if (outOfMaze) {
+            var audioLoader = new THREE.AudioLoader();
+            audioLoader.load('sounds/win.mp3', function (buffer) {
+                sound.setBuffer(buffer);
+                sound.setLoop(false);
+                sound.setVolume(0.5);
+                sound.play();
+            });
             this.levelFinished = true;
             $('#goal').html('Woo! Done! :D');
             if (this.level == this.lastLevel) {
