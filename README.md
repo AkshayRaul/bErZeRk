@@ -28,6 +28,14 @@ Model and animate multiple robots. They move north, south east or west automatic
 - Part 4: Add shooting interactions
 Players can shoot in the (cardinal) direction they are moving by pressing the space bar. Robots will also automatically shoot at the player in cardinal directions. If robot shots hit the player, the player dies. Similarly, robot shots can kill other robots. Shots are not instant: they move slowly toward their target.
 
+#### Implementation
+
+- The player is a model from Mixamo, which is loaded using Three.js's GLBloader
+- The player is faster than the robots by 2x
+- The robots move towards the player usign pythagoras distance and one of all the robots will shoot at the player
+- Player and robots can only shoot bullets when the current shot bullet dies by hitting walls or killing one of the robots
+- The user is free to change the settings as the code is written in such a way that the number of robots, levels can be easily added
+
 #### Extra Credits
 
 - track and display score. 1 killed bot = 100 points
@@ -37,4 +45,6 @@ Players can shoot in the (cardinal) direction they are moving by pressing the sp
 
 #### Screencast
 
-Video Shared via GDrive: 
+Video Shared via GDrive:  https://go.ncsu.edu/araul_berzerk
+
+If the video does not play, please try to open it on a different browser and/or OS

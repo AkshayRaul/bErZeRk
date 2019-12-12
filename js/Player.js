@@ -18,7 +18,7 @@ var player = function (scene, camera, startPosition) {
         obj = that
         var loader = loader.load('./js/libs/Soldier.glb', function (gltf) {
             const model = gltf.scene.children[0];
-            model.position.copy(new THREE.Vector3(startPosition.x, startPosition.y, -2));
+            model.position.copy(new THREE.Vector3(startPosition.x, startPosition.y, 0));
             model.scale.set(0.1, 0.1, 0.1)
             model.rotation.set(0, 0, 0)
             playerModel = model

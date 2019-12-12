@@ -2,10 +2,6 @@
  * GameScreen
  */
 
-/**
- * 
- */
-
 var GameScreen = Class.extend({
     /*
      * Init
@@ -20,6 +16,8 @@ var GameScreen = Class.extend({
         this.clock = new THREE.Clock();
         this.mixer = null;
         this.setupSound();
+        this.score = 0;
+        this.setScore(0);
         this.setup();
     },
     setupSound: function(){
@@ -126,11 +124,9 @@ var GameScreen = Class.extend({
 
         // Then create the bot, so it spawns inside level walls
         this.addBots();
-        this.score = 0;
         this.botsKilled = 0;
 
         $('#info').show();
-        this.setScore(0);
         this.levelFinished = false;
         this.updateLevelGoal();
 
